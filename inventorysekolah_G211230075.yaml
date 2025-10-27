@@ -1,0 +1,189 @@
+openapi: "3.0.2"
+info:
+  title: API Inventory Sekolah
+  description: API untuk mengelola data inventaris sekolah seperti barang, kategori, dan peminjaman barang.
+  version: 1.0.0
+  contact:
+    name: Admin Inventory Sekolah
+    email: admin@inventorysekolah.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://api.inventorysekolah.com/v1
+    description: Production server
+  - url: http://api-staging.inventorysekolah.com/v2
+    description: Staging server
+
+tags:
+  - name: Barang
+    description: Endpoint untuk mengelola data barang inventaris sekolah
+  - name: Kategori
+    description: Endpoint untuk mengelola kategori barang
+  - name: Peminjaman
+    description: Endpoint untuk mengelola data peminjaman barang
+
+paths:
+  /barang:
+    get:
+      tags:
+        - Barang
+      summary: Mendapatkan daftar barang inventaris
+      description: Mengembalikan semua data barang inventaris sekolah
+      operationId: getBarang
+      responses:
+        '200':
+          description: Daftar barang berhasil diambil
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Barang'
+        '500':
+          description: Kesalahan server
+    post:
+      tags:
+        - Barang
+      summary: Menambahkan barang baru ke inventaris
+      description: Menambahkan data barang baru ke dalam inventaris sekolah
+      operationId: addBarang
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BarangInput'
+      responses:
+        '201':
+          description: Barang berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Barang'
+        '400':
+          description: Data tidak valid
+        '500':
+          description: Kesalahan server
+
+  /barang/{id}:
+    get:
+      tags:
+        - Barang
+      summary: Mendapatkan detail barang
+      description: Mengambil informasi detail barang berdasarkan ID
+      operationId: getBarangById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID barang
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detail barang berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Barang'
+        '404':
+          description: Barang tidak ditemukan
+        '500':
+          description: Kesalahan server
+    put:
+      tags:
+        - Barang
+      summary: Mengupdate data barang
+      description: Memperbarui data barang berdasarkan ID
+      operationId: updateBarang
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID barang yang akan diupdate
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BarangInput'
+      responses:
+        '200':
+          description: Barang berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Barang'
+        '404':
+          description: Barang tidak ditemukan
+        '500':
+          description: Kesalahan server
+    delete:
+      tags:
+        - Barang
+      summary: Menghapus barang dari inventaris
+      description: Menghapus data barang berdasarkan ID
+      operationId: deleteBarang
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID barang yang akan dihapus
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Barang berhasil dihapus
+        '404':
+          description: Barang tidak ditemukan
+        '500':
+          description: Kesalahan server
+
+components:
+  schemas:
+    Barang:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID unik barang
+        nama:
+          type: string
+          description: Nama barang inventaris
+        kategori:
+          type: string
+          description: Kategori barang
+        jumlah:
+          type: integer
+          description: Jumlah barang tersedia
+        kondisi:
+          type: string
+          description: Kondisi barang (baik/rusak)
+        lokasi:
+          type: string
+          description: Lokasi penyimpanan barang
+    BarangInput:
+      type: object
+      properties:
+        nama:
+          type: string
+          description: Nama barang inventaris
+        kategori:
+          type: string
+          description: Kategori barang
+        jumlah:
+          type: integer
+          description: Jumlah barang tersedia
+        kondisi:
+          type: string
+          description: Kondisi barang
+        lokasi:
+          type: string
+          description: Lokasi penyimpanan barang
+      required:
+        - nama
+        - kategori
+        - jumlah
